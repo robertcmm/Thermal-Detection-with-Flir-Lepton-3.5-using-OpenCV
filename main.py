@@ -5,10 +5,10 @@ import pandas as pd
 
 base_dir = 'Computer Vision Projects/Thermal Screening Project/'
 threshold = 200
-area_of_box = 1000        # 3000 for img input
-min_temp = 40.5           # in fahrenheit
-font_scale_caution = 1   # 2 for img input
-font_scale_temp = 0.7    # 1 for img input
+area_of_box = 1000        
+min_temp = 40.5           
+font_scale_caution = 1   
+font_scale_temp = 0.7    
 save = []
 
 def convert_to_temperature(pixel_avg):
@@ -30,7 +30,7 @@ def format_color_groups(values):
 
 def process_frame(frame):
 
-    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    
     heatmap_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
     heatmap = cv2.applyColorMap(heatmap_gray, cv2.COLORMAP_HOT)
 
@@ -58,17 +58,11 @@ def process_frame(frame):
         # Mask is boolean type of matrix.
         mask = np.zeros_like(heatmap_gray)
         cv2.drawContours(mask, contour, -1, 255, -1)
-        #print(mask)
         # Mean of only those pixels which are in blocks and not the whole rectangle selected
         mean = convert_to_temperature(cv2.mean(heatmap_gray, mask=mask)[0])
-        #max_val = convert_to_temperature(cv2.max(heatmap_gray, mask=mask)[0])
-        #max = convert_to_temperature(np.amax(heatmap_gray+mask))
-        #print(heatmap_gray+mask)
+
         t3mp = (mean-32)*5/9
-        # Colors for rectangles and textmin_area
-        #temperature = round(t3mp, 2)
-        #for i in range(len(max)):
-         #   temperature = max[i]
+
         
         temperature = round(t3mp,2)
         save.append(temperature)
@@ -113,14 +107,10 @@ def main():
         df = pd.DataFrame(save)
         df = df.style.applymap(format_color_groups)
         df = df.set_table_attributes('style="border-collapse: collapse; border: 1px solid black;"')
-        #df = pd.concat([df, pd.DataFrame(np.random.randn(10, 4), columns=list('BCDE'))],axis=1)       
-        #df.style.apply(color_negative_red)
-        #df.style.highlight_max()
-        #df.style.apply(color_negative_red).to_excel('styled.xlsx', engine = 'openpyxl')
         filepath = 'sample2.xlsx'
         
         df.to_excel(filepath, index=False)
-        #np.savetxt("Sample.txt", save, delimiter=",")
+        
         # Show the video as it is being processed in a window
         cv2.imshow('frame', frame)
 
@@ -138,20 +128,6 @@ def main():
         out.write(video_frames[i])
     out.release()
 
-    # img = cv2.imread(str(base_dir + 'input_image.jpg'))
-    #
-    # # Process the image
-    # processed_img = process_frame(img)
-    # height, width, _ = processed_img.shape
-    # dim = (int(width * 0.5),int(height * 0.5))
-    #
-    # resized_img = cv2.resize(processed_img, dim, interpolation=cv2.INTER_AREA)
-    # cv2.imwrite(str(base_dir + 'output_image.jpg'), resized_img)
-    #
-    # saved_img = cv2.imread(str(base_dir + 'output_image.jpg'))
-    # cv2.imshow('output', saved_img)
-    #
-    # cv2.waitKey(0)
 
 
 if __name__ == "__main__":
